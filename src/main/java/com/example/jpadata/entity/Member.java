@@ -8,6 +8,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NamedQuery(
+        name = "Member.findByUsername",
+        query = "select m from Member m where m.username = :username"
+)
+@NamedQuery(
+        name = "Member.count",
+        query = "select count(m) from Member m"
+)
 public class Member {
 
     @Id
@@ -31,6 +39,11 @@ public class Member {
         if (team != null) {
             changeTeam(team);
         }
+    }
+
+    public Member(String username, int age) {
+        this.username = username;
+        this.age = age;
     }
 
     public void changeTeam(Team team) {
