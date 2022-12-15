@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -17,9 +19,12 @@ public class MemberJpaRepositoryTest {
     @Autowired
     MemberJpaRepository memberJpaRepository;
 
+    @PersistenceContext
+    EntityManager em;
+
 
     @Test
-    void basicCRUD() throws Exception{
+    void basicCRUD() throws Exception {
         Member member1 = new Member("memberA");
         Member member2 = new Member("member2");
         memberJpaRepository.save(member1);
@@ -48,7 +53,7 @@ public class MemberJpaRepositoryTest {
     }
 
     @Test
-    void findByUsernameAndAgeGreaterThanTest() throws Exception{
+    void findByUsernameAndAgeGreaterThanTest() throws Exception {
         Member member1 = new Member("memberA", 10);
         Member member2 = new Member("memberA", 20);
         memberJpaRepository.save(member1);
@@ -63,7 +68,7 @@ public class MemberJpaRepositoryTest {
 
 
     @Test
-    void testNamedQuery() throws Exception{
+    void testNamedQuery() throws Exception {
         Member member1 = new Member("memberA", 10);
         Member member2 = new Member("memberA", 20);
 
@@ -77,8 +82,8 @@ public class MemberJpaRepositoryTest {
     }
 
     @Test
-    void paging() throws Exception{
-                 // given
+    void paging() throws Exception {
+        // given
         memberJpaRepository.save(new Member("member1", 10));
         memberJpaRepository.save(new Member("member2", 10));
         memberJpaRepository.save(new Member("member3", 10));
@@ -99,7 +104,7 @@ public class MemberJpaRepositoryTest {
     }
 
     @Test
-    void bulkUpdate() throws Exception{
+    void bulkUpdate() throws Exception {
         // make member object 5 and save
         memberJpaRepository.save(new Member("member1", 10));
         memberJpaRepository.save(new Member("member2", 19));
@@ -112,5 +117,27 @@ public class MemberJpaRepositoryTest {
 
         // then
         assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    void jpaEvenBaseEntity() throws Exception {
+        // given
+        Member member = new Member("member1");
+        memberJpaRepository.save(member);
+
+        // when
+        Thread.sleep(100);
+        member.setUsername("member2");
+
+        em.flush();
+        em.clear();
+
+        // then
+        Member findMember = memberJpaRepository.findById(member.getId()).get();
+
+        System.out.println("findMember.getCreatedDate() = " + findMember.getCreateDate());
+        System.out.println("findMember.getUpdatedDate() = " + findMember.getUpdatedDate());
+        System.out.println("findMember.getCreatedBy() = " + findMember.getCreatedBy());
+        System.out.println("findMember.getUpdatedBy() = " + findMember.getLastModifiedBy());
     }
 }

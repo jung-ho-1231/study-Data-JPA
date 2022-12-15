@@ -16,7 +16,7 @@ import javax.persistence.*;
         name = "Member.count",
         query = "select count(m) from Member m"
 )
-public class Member {
+public class Member extends BaseEntity{
 
     @Id
     @GeneratedValue

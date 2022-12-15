@@ -244,7 +244,6 @@ class MemberRepositoryTest {
         assertThat(page.hasNext()).isTrue();
     }
 
-
     @Test
     void bulkUpdate() throws Exception {
         // make member object 5 and save
@@ -345,6 +344,10 @@ class MemberRepositoryTest {
 
     }
 
+    @Test
+    void callCustom() throws Exception {
+        List<Member> result = memberRepository.findMemberCustom();
+    }
 
 
 }
